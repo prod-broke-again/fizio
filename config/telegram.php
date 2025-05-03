@@ -32,6 +32,6 @@ return [
     */
 
     'webapp' => [
-        'url' => env('TELEGRAM_WEBAPP_URL', env('APP_URL') . '/telegram/webapp'),
+        'url' => env('TELEGRAM_WEBAPP_URL', env('APP_URL')),
     ],
 ]; 

@@ -85,30 +85,10 @@ class TelegramController extends Controller
         
         // Обработка обычных сообщений
         if ($text === 'Открыть приложение') {
-            // Отправляем ссылку на WebApp
-            $this->telegramService->sendMessage($chatId, 'Нажмите на кнопку ниже, чтобы открыть приложение:', [
-                'reply_markup' => json_encode([
-                    'inline_keyboard' => [
-                        [
-                            [
-                                'text' => 'Открыть Fizio',
-                                'web_app' => ['url' => config('telegram.webapp.url')]
-                            ]
-                        ]
-                    ]
-                ])
-            ]);
-        } elseif ($text === 'Мой профиль') {
-            $this->telegramService->sendMessage($chatId, 'Ваш профиль в разработке. Скоро здесь появится информация о вашем прогрессе!');
-        } elseif ($text === 'Статистика') {
-            $this->telegramService->sendMessage($chatId, 'Статистика в разработке. Скоро здесь появятся данные о ваших тренировках!');
-        } elseif ($text === 'Тренировки') {
-            $this->telegramService->sendMessage($chatId, 'Раздел тренировок в разработке. Скоро здесь появится расписание ваших занятий!');
-        } elseif ($text === 'Помощь') {
-            $this->sendHelpMessage($chatId);
+            $this->sendOpenAppMessage($chatId);
         } else {
-            // Неизвестное сообщение
-            $this->telegramService->sendMessage($chatId, 'Я не понимаю эту команду. Используйте кнопки меню или отправьте /help для получения справки.');
+            // Любое другое сообщение будет перенаправлять на открытие приложения
+            $this->sendWelcomeMessage($chatId);
         }
     }
     
@@ -127,38 +107,12 @@ class TelegramController extends Controller
                 
             case '/webapp':
             case '/app':
-                $this->telegramService->sendMessage($chatId, 'Нажмите на кнопку ниже, чтобы открыть приложение:', [
-                    'reply_markup' => json_encode([
-                        'inline_keyboard' => [
-                            [
-                                [
-                                    'text' => 'Открыть Fizio',
-                                    'web_app' => ['url' => config('telegram.webapp.url')]
-                                ]
-                            ]
-                        ]
-                    ])
-                ]);
-                break;
-                
-            case '/profile':
-                $this->telegramService->sendMessage($chatId, 'Ваш профиль в разработке. Скоро здесь появится информация о вашем прогрессе!');
-                break;
-                
-            case '/stats':
-                $this->telegramService->sendMessage($chatId, 'Статистика в разработке. Скоро здесь появятся данные о ваших тренировках!');
-                break;
-                
-            case '/workout':
-                $this->telegramService->sendMessage($chatId, 'У вас нет запланированных тренировок. Воспользуйтесь приложением, чтобы добавить тренировку.');
-                break;
-                
-            case '/help':
-                $this->sendHelpMessage($chatId);
+                $this->sendOpenAppMessage($chatId);
                 break;
                 
             default:
-                $this->telegramService->sendMessage($chatId, 'Неизвестная команда. Отправьте /help для получения справки.');
+                // Любая неизвестная команда будет перенаправлять на открытие приложения
+                $this->sendWelcomeMessage($chatId);
                 break;
         }
     }
@@ -169,15 +123,14 @@ class TelegramController extends Controller
     protected function handleCallbackQuery(array $callbackQuery)
     {
         $chatId = $callbackQuery['message']['chat']['id'];
-        $data = $callbackQuery['data'];
-        
-        // Обработка различных callbackQuery данных
-        // ...
         
         // Подтверждение получения callbackQuery
         $this->telegramService->callApi('answerCallbackQuery', [
             'callback_query_id' => $callbackQuery['id'],
         ]);
+        
+        // Показываем сообщение с открытием приложения
+        $this->sendOpenAppMessage($chatId);
     }
     
     /**
@@ -186,18 +139,11 @@ class TelegramController extends Controller
     protected function sendWelcomeMessage(string $chatId)
     {
         $text = "👋 *Добро пожаловать в Fizio Fitness Bot!*\n\n";
-        $text .= "Я ваш персональный фитнес-помощник. С моей помощью вы можете:\n";
-        $text .= "• Открыть фитнес-приложение\n";
-        $text .= "• Просматривать свой профиль\n";
-        $text .= "• Получать статистику тренировок\n";
-        $text .= "• Следить за расписанием тренировок\n\n";
-        $text .= "Используйте кнопки меню или отправьте /help для получения справки.";
+        $text .= "Нажмите на кнопку ниже, чтобы открыть приложение:";
         
-        // Создаем клавиатуру
+        // Создаем клавиатуру только с одной кнопкой
         $keyboard = [
             ['Открыть приложение'],
-            ['Мой профиль', 'Статистика'],
-            ['Тренировки', 'Помощь'],
         ];
         
         $this->telegramService->sendMessage($chatId, $text, [
@@ -211,21 +157,21 @@ class TelegramController extends Controller
     }
     
     /**
-     * Отправка справочного сообщения
+     * Отправка сообщения с кнопкой открытия приложения
      */
-    protected function sendHelpMessage(string $chatId)
+    protected function sendOpenAppMessage(string $chatId)
     {
-        $text = "*Доступные команды:*\n\n";
-        $text .= "/start - Начать работу с ботом\n";
-        $text .= "/webapp - Открыть веб-приложение\n";
-        $text .= "/profile - Просмотреть ваш профиль\n";
-        $text .= "/stats - Получить статистику тренировок\n";
-        $text .= "/workout - Информация о следующей тренировке\n";
-        $text .= "/help - Получить эту справку\n\n";
-        $text .= "Вы также можете использовать кнопки меню для быстрого доступа к функциям.";
-        
-        $this->telegramService->sendMessage($chatId, $text, [
-            'parse_mode' => 'Markdown',
+        $this->telegramService->sendMessage($chatId, 'Нажмите на кнопку ниже, чтобы открыть приложение:', [
+            'reply_markup' => json_encode([
+                'inline_keyboard' => [
+                    [
+                        [
+                            'text' => 'Открыть Fizio',
+                            'web_app' => ['url' => config('telegram.webapp.url')]
+                        ]
+                    ]
+                ]
+            ])
         ]);
     }
     
@@ -234,6 +180,7 @@ class TelegramController extends Controller
      */
     public function webApp()
     {
-        return view('telegram.webapp');
+        // Возвращаем представление SPA вместо редиректа
+        return view('spa');
     }
 } 

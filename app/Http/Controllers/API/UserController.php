@@ -5,17 +5,89 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
     public function profile(Request $request)
     {
+        $user = $request->user();
+        
+        // Переопределяем пол пользователя на "not-specified"
+        $userData = $user->toArray();
+        $userData['gender'] = 'not-specified';
+        
+        // Добавляем URL аватара, если аватар существует
+        if ($user->avatar) {
+            $userData['avatar_url'] = url(Storage::url($user->avatar));
+        }
+        
         return response()->json([
             'success' => true,
             'data' => [
-                'user' => $request->user()
+                'user' => $userData
             ],
             'message' => 'Профиль пользователя'
+        ]);
+    }
+    
+    public function updateProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:users,email,' . $request->user()->id,
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // Временно отключаем выбор пола
+            // 'gender' => 'nullable|string|in:male,female,non-binary,not-specified',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = $request->user();
+        
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+        
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+        
+        // Обработка загрузки аватара
+        if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
+            // Удаление старого аватара, если он существует
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            
+            // Загрузка нового аватара
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
+        }
+        
+        // Всегда устанавливаем фиксированное значение для пола
+        $user->gender = 'not-specified';
+        
+        $user->save();
+        
+        // Формируем полный URL для аватара, если он есть
+        $userData = $user->toArray();
+        if ($user->avatar) {
+            $userData['avatar_url'] = url(Storage::url($user->avatar));
+        }
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => $userData
+            ],
+            'message' => 'Профиль успешно обновлен'
         ]);
     }
 
@@ -58,6 +130,18 @@ class UserController extends Controller
                 'updated_at' => $user->updated_at
             ],
             'message' => 'Текущая цель фитнеса'
+        ]);
+    }
+    
+    public function getGender(Request $request)
+    {
+        // Всегда возвращаем фиксированное значение "not-specified"
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'gender' => 'not-specified'
+            ],
+            'message' => 'Пол пользователя'
         ]);
     }
 } 

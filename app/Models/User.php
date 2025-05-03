@@ -28,6 +28,7 @@ class User extends Authenticatable
         'device_token',
         'telegram_id',
         'telegram_username',
+        'avatar',
     ];
 
     /**
@@ -46,9 +47,9 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
 
     /**
      * Проверяет, связан ли пользователь с Telegram

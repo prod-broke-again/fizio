@@ -107,34 +107,86 @@ class TelegramService
     
     /**
      * Валидация данных от Telegram WebApp
+     * 
+     * Реализация согласно документации: https://core.telegram.org/bots/webapps#validating-data-received-via-the-web-app
      */
     public function validateWebAppData(array $initData): bool
     {
+        Log::debug('Проверка данных WebApp', ['data_keys' => array_keys($initData)]);
+        
         // Проверка, что initData не пустой и токен бота настроен
-        if (empty($initData) || !isset($initData['hash']) || empty($this->token)) {
+        if (empty($initData) || empty($this->token)) {
+            Log::error('Ошибка валидации Telegram: пустые данные или отсутствует токен', ['initData' => array_keys($initData)]);
             return false;
         }
         
-        // Получение хеша из данных
-        $hash = $initData['hash'];
-        unset($initData['hash']);
-        
-        // Сортировка параметров в алфавитном порядке
-        ksort($initData);
-        
-        // Формирование строки для проверки
-        $dataCheckString = '';
-        foreach ($initData as $key => $value) {
-            $dataCheckString .= $key . '=' . $value . "\n";
+        // Проверка наличия обязательных полей
+        if (!isset($initData['hash'])) {
+            Log::error('Ошибка валидации Telegram: отсутствует поле hash');
+            return false;
         }
-        $dataCheckString = trim($dataCheckString);
         
-        // Генерация секретного ключа на основе токена бота
-        $secretKey = hash('sha256', $this->token, true);
+        // Проверка наличия auth_date
+        if (!isset($initData['auth_date'])) {
+            Log::error('Ошибка валидации Telegram: отсутствует поле auth_date');
+            return false;
+        }
         
-        // Вычисление и проверка хеша
+        // В разработке можно пропустить проверку, если ваш бот в тестовом режиме
+        if (app()->environment('local', 'development') && config('app.debug')) {
+            Log::warning('Проверка данных Telegram пропущена в режиме разработки');
+            return true;
+        }
+        
+        // 1. Получение хеша из данных
+        $hash = $initData['hash'];
+        
+        // 2. Создаем отдельный массив без поля 'hash'
+        $dataToCheck = $initData;
+        unset($dataToCheck['hash']);
+        
+        // 3. Сортируем ключи в алфавитном порядке
+        ksort($dataToCheck);
+        
+        // 4. Создаем строку для проверки в формате "key=value\nkey=value"
+        $dataCheckString = [];
+        foreach ($dataToCheck as $key => $value) {
+            // Обрабатываем значение в зависимости от типа
+            if (is_array($value)) {
+                // Если значение - массив или объект, пропускаем
+                continue;
+            } elseif (is_bool($value)) {
+                // Преобразуем булево в строку
+                $value = $value ? 'true' : 'false';
+            }
+            
+            $dataCheckString[] = $key . '=' . $value;
+        }
+        
+        // Объединяем параметры в одну строку через \n (важно: именно перенос строки, а не &)
+        $dataCheckString = implode("\n", $dataCheckString);
+        
+        // 5. Создаем секретный ключ с использованием строки "WebAppData" и токена бота
+        $secretKey = hash_hmac('sha256', 'WebAppData', $this->token, true);
+        
+        // 6. Создаем HMAC-SHA256 от dataCheckString с использованием secretKey
         $calculatedHash = hash_hmac('sha256', $dataCheckString, $secretKey);
         
-        return $calculatedHash === $hash;
+        // Логируем детали для отладки
+        Log::debug('Детали валидации данных Telegram', [
+            'token_first_chars' => substr($this->token, 0, 5) . '...',
+            'data_string' => $dataCheckString,
+            'calculated_hash' => $calculatedHash,
+            'received_hash' => $hash
+        ]);
+        
+        // 7. Сравниваем вычисленный хеш с полученным
+        $result = hash_equals($calculatedHash, $hash);
+        
+        if (!$result) {
+            Log::error('Ошибка валидации Telegram: хеши не совпадают');
+        }
+        
+        return $result;
     }
 } 

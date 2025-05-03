@@ -17,7 +17,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'gender' => 'nullable|string|in:male,female,non-binary,not-specified',
+            // 'gender' => 'nullable|string|in:male,female,non-binary,not-specified',
             'device_token' => 'nullable|string',
         ]);
 
@@ -33,7 +33,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'gender' => $request->gender,
+            'gender' => 'not-specified', // Устанавливаем фиксированное значение
             'device_token' => $request->device_token,
         ]);
 
@@ -66,18 +66,21 @@ class AuthController extends Controller
             ], 422);
         }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        $credentials = $request->only('email', 'password');
+
+        if (!Auth::attempt($credentials)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Неверный email или пароль',
+                'message' => 'Неверный email или пароль'
             ], 401);
         }
 
-        $user = User::where('email', $request->email)->firstOrFail();
+        $user = Auth::user();
         
-        // Обновляем токен устройства
-        if ($request->device_token) {
-            $user->update(['device_token' => $request->device_token]);
+        // Обновление токена устройства, если он предоставлен
+        if ($request->has('device_token')) {
+            $user->device_token = $request->device_token;
+            $user->save();
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -89,7 +92,7 @@ class AuthController extends Controller
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ],
-            'message' => 'Авторизация успешна'
+            'message' => 'Успешная авторизация'
         ]);
     }
 
@@ -99,7 +102,24 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Выход выполнен успешно'
+            'message' => 'Успешный выход из системы'
+        ]);
+    }
+
+    public function refresh(Request $request)
+    {
+        $user = $request->user();
+        $user->tokens()->delete();
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => $user,
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ],
+            'message' => 'Токен успешно обновлен'
         ]);
     }
 } 
