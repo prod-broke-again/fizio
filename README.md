@@ -1,149 +1,192 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Fizio - Фитнес-приложение с AI-ассистентом 🐼
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Fizio App](https://fizio.online/img/logo.png)
 
-## About Laravel
+## О проекте
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Fizio** - это современное фитнес-приложение, которое помогает пользователям следить за тренировками, питанием и достигать своих целей в области здорового образа жизни. Особенность приложения - дружелюбный AI-ассистент в образе панды, который дает персонализированные рекомендации и отвечает на вопросы в реальном времени.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Ключевые возможности
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Для пользователей
+- 🤖 **AI-ассистент в образе панды** - задавайте вопросы и получайте экспертные советы по фитнесу
+- 📊 **Отслеживание прогресса** - мониторинг тренировок и достижений
+- 📅 **Планирование тренировок** - создание и отслеживание расписания занятий
+- 🔄 **История общения** - ассистент "помнит" предыдущие разговоры и дает контекстные ответы
+- 📱 **Интеграция с Telegram** - доступ к функционалу через Telegram-бота
 
-## Learning Laravel
+### Технически
+- ⚡ **Общение в реальном времени** - WebSocket соединение для мгновенных ответов
+- 🧠 **GPT 4.1 Nano модель** - современный AI через GPTunnel API
+- 📝 **Сохранение контекста** - история из 20 последних сообщений для более точных ответов
+- 🔒 **Безопасная аутентификация** - система токенов и защита API
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Технический стек
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Backend
+- **Laravel 10** - основной фреймворк
+- **PHP 8.2** - язык программирования
+- **Node.js** - для WebSocket сервера
+- **Redis** - для передачи данных между сервисами
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Frontend
+- **Vue.js** - фреймворк для интерфейса
+- **Tailwind CSS** - стилизация
+- **Socket.io** - клиентская библиотека для WebSocket
 
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-# Fizio API
-
-Серверная часть фитнес-приложения Fizio, разработанная на фреймворке Laravel.
-
-## Описание
-
-Fizio API предоставляет бэкенд-функциональность для мобильного фитнес-приложения на Ionic Vue. API обеспечивает регистрацию и аутентификацию пользователей, а также сохранение и получение информации о целях фитнеса.
-
-## Требования
-
-* PHP 8.1+
-* Composer
-* MySQL 8.0+
-* Nginx/Apache
+### Инфраструктура
+- **MySQL** - основная база данных
+- **Laravel Queue** - система очередей для обработки сообщений
+- **GPTunnel API** - провайдер AI-моделей
 
 ## Установка
 
-1. Клонируйте репозиторий:
-```bash
-git clone https://github.com/yourusername/fizio.git
-cd fizio
+### Предварительные требования
+- PHP 8.2+
+- Composer
+- Node.js 16+
+- MySQL 8+
+- Redis
+
+### Шаги установки
+
+1. **Клонирование репозитория**
+   ```bash
+   git clone https://github.com/yourusername/fizio.git
+   cd fizio
+   ```
+
+2. **Установка PHP зависимостей**
+   ```bash
+   composer install
+   ```
+
+3. **Установка JavaScript зависимостей**
+   ```bash
+   npm install
+   ```
+
+4. **Настройка окружения**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Настройка базы данных**
+   Отредактируйте файл `.env`, указав параметры подключения к базе данных:
+   ```
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=fizio
+   DB_USERNAME=root
+   DB_PASSWORD=password
+   ```
+
+6. **Настройка Redis**
+   В файле `.env` укажите параметры подключения к Redis:
+   ```
+   REDIS_CLIENT=predis
+   REDIS_HOST=127.0.0.1
+   REDIS_PASSWORD=null
+   REDIS_PORT=6379
+   REDIS_DB=0
+   ```
+
+7. **Настройка GPTunnel API**
+   Добавьте в `.env` свой API ключ:
+   ```
+   GPTUNNEL_API_KEY=your-api-key
+   GPTUNNEL_ENABLED=true
+   GPTUNNEL_MODEL=gpt-4.1-nano
+   ```
+
+8. **Применение миграций**
+   ```bash
+   php artisan migrate
+   ```
+
+9. **Компиляция ассетов**
+   ```bash
+   npm run dev
+   ```
+
+10. **Запуск приложения**
+    ```bash
+    php artisan serve
+    ```
+
+11. **Запуск WebSocket сервера**
+    ```bash
+    cd ws_server
+    node server.js
+    ```
+
+## Структура проекта
+
+```
+fizio/
+├── app/                 # PHP код приложения
+│   ├── Http/            # Контроллеры и middleware
+│   ├── Jobs/            # Задачи очередей
+│   └── Models/          # Модели данных
+├── config/              # Конфигурационные файлы
+├── database/            # Миграции и сиды
+├── public/              # Публично доступные файлы
+├── resources/           # Исходные ресурсы (JS, CSS, Vue)
+├── routes/              # Определения маршрутов
+├── ws_server/           # Сервер WebSocket на Node.js
+└── .env                 # Файл с переменными окружения
 ```
 
-2. Установите зависимости:
-```bash
-composer install
+## API Endpoints
+
+### Аутентификация
+- `POST /api/auth/register` - Регистрация пользователя
+- `POST /api/auth/login` - Вход в систему
+- `POST /api/auth/logout` - Выход из системы
+
+### Пользователь
+- `GET /api/user/profile` - Получение профиля пользователя
+- `POST /api/user/profile` - Обновление профиля
+- `POST /api/user/fitness-goal` - Сохранение цели фитнеса
+- `GET /api/user/fitness-goal` - Получение текущей цели
+
+### Чат с AI
+- `POST /api/chat/send` - Отправка сообщения ассистенту
+- `GET /api/chat/history` - Получение истории сообщений
+- `POST /api/chat/voice` - Отправка голосового сообщения (в разработке)
+
+### Тренировки
+- `GET /api/workouts/schedule` - Получение расписания тренировок
+- `POST /api/workouts` - Создание новой тренировки
+- `PUT /api/workouts/{id}` - Обновление тренировки
+- `DELETE /api/workouts/{id}` - Удаление тренировки
+
+## WebSocket API
+
+Для подключения к WebSocket серверу используйте:
+```javascript
+const socket = io('ws://your-domain.com:3001');
+
+// Аутентификация
+socket.emit('authenticate', 'your-auth-token');
+
+// Получение ответов от ассистента
+socket.on('chat_response', (data) => {
+  console.log(data);
+});
 ```
 
-3. Скопируйте файл окружения и настройте подключение к базе данных:
-```bash
-cp .env.example .env
-```
+## Контрибьюторы
 
-4. Сгенерируйте ключ приложения:
-```bash
-php artisan key:generate
-```
-
-5. Выполните миграции:
-```bash
-php artisan migrate
-```
-
-6. Запустите веб-сервер:
-```bash
-php artisan serve
-```
-
-## Документация API
-
-Подробная документация по API доступна в файле [API_DOCUMENTATION.md](API_DOCUMENTATION.md).
-
-### Основные эндпоинты:
-
-* **POST /api/auth/register** - Регистрация нового пользователя
-* **POST /api/auth/login** - Авторизация пользователя
-* **POST /api/auth/logout** - Выход из системы
-* **GET /api/user/profile** - Получение профиля пользователя
-* **POST /api/user/fitness-goal** - Сохранение цели фитнеса
-* **GET /api/user/fitness-goal** - Получение текущей цели фитнеса
-
-## Тестирование
-
-Инструкции по тестированию API доступны в файле [API_TESTING.md](API_TESTING.md).
-
-Для быстрого тестирования всех эндпоинтов можно использовать скрипт:
-```bash
-chmod +x test_api.sh
-./test_api.sh
-```
-
-Для запуска автоматических тестов используйте:
-```bash
-php artisan test
-```
-
-## Безопасность
-
-Для защиты API используется Laravel Sanctum, который обеспечивает токен-аутентификацию для SPA (одностраничных приложений) и мобильных приложений.
+- Ваше Имя - Разработчик
+- Команда Fizio
 
 ## Лицензия
 
-Этот проект распространяется под лицензией MIT. Подробности в файле [LICENSE.md](LICENSE.md).
+MIT License
 
-## Контакты
+---
 
-При возникновении вопросов, пожалуйста, обращайтесь по адресу your-email@example.com.
+Сделано с ❤️ командой Fizio
