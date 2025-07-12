@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('gender', ['male', 'female', 'non-binary', 'not-specified'])->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
             $table->enum('fitness_goal', ['weight-loss', 'muscle-gain', 'maintenance'])->nullable();
             $table->enum('activity_level', ['sedentary', 'light', 'moderate', 'high'])->nullable();
             $table->string('device_token')->nullable();

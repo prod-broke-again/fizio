@@ -370,4 +370,38 @@ class ChatController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Очистить историю чата пользователя
+     */
+    public function clearChatHistory(): JsonResponse
+    {
+        $user = auth()->user();
+        
+        try {
+            // Удаляем все сообщения пользователя
+            $count = ChatMessage::where('user_id', $user->id)->delete();
+            
+            Log::info('Очищена история чата', [
+                'user_id' => $user->id,
+                'deleted_messages' => $count
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'История чата очищена',
+                'data' => [
+                    'deleted_count' => $count
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Ошибка при очистке истории чата: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Произошла ошибка при очистке истории чата',
+            ], 500);
+        }
+    }
 }

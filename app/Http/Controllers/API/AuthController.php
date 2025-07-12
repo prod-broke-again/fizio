@@ -17,7 +17,6 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            // 'gender' => 'nullable|string|in:male,female,non-binary,not-specified',
             'device_token' => 'nullable|string',
         ]);
 
@@ -33,7 +32,6 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'gender' => 'not-specified', // Устанавливаем фиксированное значение
             'device_token' => $request->device_token,
         ]);
 

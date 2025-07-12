@@ -13,9 +13,7 @@ class UserController extends Controller
     {
         $user = $request->user();
         
-        // Переопределяем пол пользователя на "not-specified"
         $userData = $user->toArray();
-        $userData['gender'] = 'not-specified';
         
         // Добавляем URL аватара, если аватар существует
         if ($user->avatar) {
@@ -37,8 +35,7 @@ class UserController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email|unique:users,email,' . $request->user()->id,
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // Временно отключаем выбор пола
-            // 'gender' => 'nullable|string|in:male,female,non-binary,not-specified',
+            'gender' => 'nullable|string|in:male,female',
         ]);
 
         if ($validator->fails()) {
@@ -59,6 +56,10 @@ class UserController extends Controller
             $user->email = $request->email;
         }
         
+        if ($request->has('gender')) {
+            $user->gender = $request->gender;
+        }
+        
         // Обработка загрузки аватара
         if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
             // Удаление старого аватара, если он существует
@@ -70,9 +71,6 @@ class UserController extends Controller
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $avatarPath;
         }
-        
-        // Всегда устанавливаем фиксированное значение для пола
-        $user->gender = 'not-specified';
         
         $user->save();
         
@@ -135,11 +133,11 @@ class UserController extends Controller
     
     public function getGender(Request $request)
     {
-        // Всегда возвращаем фиксированное значение "not-specified"
+        $user = $request->user();
         return response()->json([
             'success' => true,
             'data' => [
-                'gender' => 'not-specified'
+                'gender' => $user->gender
             ],
             'message' => 'Пол пользователя'
         ]);

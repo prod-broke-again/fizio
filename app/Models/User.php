@@ -60,4 +60,9 @@ class User extends Authenticatable
     {
         return $this->telegram_id !== null;
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

@@ -1,0 +1,98 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fizio-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    environment:
+      APP_ENV: production
+      APP_KEY: ${APP_KEY}
+      APP_URL: https://fizio.online
+      DB_CONNECTION: mysql
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_DATABASE: fizio
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      REDIS_HOST: redis
+      MEMCACHED_HOST: memcached
+    depends_on:
+      - mariadb
+      - redis
+      - memcached
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: fizio-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./:/var/www
+    depends_on:
+      - app
+      - node
+    networks:
+      - backend
+
+  node:
+    build:
+      context: ./ws_server
+      dockerfile: Dockerfile
+    container_name: fizio-ws
+    restart: unless-stopped
+    environment:
+      REDIS_HOST: redis
+    depends_on:
+      - redis
+    networks:
+      - backend
+
+  mariadb:
+    image: mariadb:11
+    container_name: fizio-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_DATABASE: fizio
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+
+  redis:
+    image: redis:alpine
+    container_name: fizio-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+
+  memcached:
+    image: memcached:alpine
+    container_name: fizio-memcached
+    restart: unless-stopped
+    ports:
+      - "11211:11211"
+    networks:
+      - backend
+
+volumes:
+  dbdata:
+
+networks:
+  backend:
+    driver: bridge 

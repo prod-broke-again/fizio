@@ -20,7 +20,6 @@ class AuthTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'gender' => 'male',
             'device_token' => 'test-device-token'
         ]);
 
@@ -49,7 +48,7 @@ class AuthTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
             'name' => 'Тестовый Пользователь',
-            'gender' => 'male',
+            'gender' => null,
             'device_token' => 'test-device-token'
         ]);
     }

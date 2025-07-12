@@ -42,6 +42,8 @@ const redisPubClient = new Redis(redisConfig);
 const CHAT_CHANNEL = 'chat:messages';
 console.log(`Основной канал чата: ${CHAT_CHANNEL}`);
 const STATUS_CHANNEL = 'chat:status';
+const NOTIFICATIONS_CHANNEL = 'notifications';
+console.log(`Канал уведомлений: ${NOTIFICATIONS_CHANNEL}`);
 
 // Мапа активных соединений: userId -> [socket1, socket2, ...]
 const userSockets = new Map();
@@ -96,9 +98,27 @@ redisSubscriber.subscribe(STATUS_CHANNEL, (err, count) => {
   }
 });
 
+// Подписываемся на канал уведомлений
+redisSubscriber.subscribe(NOTIFICATIONS_CHANNEL, (err, count) => {
+  if (err) {
+    console.error('[REDIS] Ошибка при подписке на канал уведомлений:', err);
+  } else {
+    console.log(`[REDIS] Успешно подписаны на ${NOTIFICATIONS_CHANNEL}`);
+    // Проверяем подключение к Redis
+    redisSubscriber.ping((err, result) => {
+      if (err) {
+        console.error('[REDIS] Ошибка при проверке подключения:', err);
+      } else {
+        console.log('[REDIS] Подключение активно, PING:', result);
+      }
+    });
+  }
+});
+
 // Получаем сообщения из Redis и отправляем клиентам
 redisSubscriber.on('message', (channel, message) => {
   console.log(`[REDIS] Получено сообщение из канала: ${channel}, длина: ${message.length} байт`);
+  console.log(`[REDIS] Содержимое сообщения: ${message}`);
   
   if (channel === CHAT_CHANNEL) {
     try {
@@ -144,6 +164,36 @@ redisSubscriber.on('message', (channel, message) => {
       console.log(`[STATUS] Получено обновление статуса пользователя ${statusData.user_id}: ${statusData.status}`);
     } catch (error) {
       console.error('[STATUS] Ошибка при обработке статуса:', error);
+    }
+  } else if (channel === NOTIFICATIONS_CHANNEL) {
+    try {
+      console.log('[NOTIFICATIONS] Начало обработки уведомления');
+      const notificationData = JSON.parse(message);
+      
+      // Проверка наличия обязательных полей
+      if (!notificationData.user_id || !notificationData.message) {
+        console.warn(`[NOTIFICATIONS] Некорректный формат уведомления:`, message);
+        return;
+      }
+      
+      const userId = notificationData.user_id.toString();
+      console.log(`[NOTIFICATIONS] Получено уведомление для пользователя ${userId}:`, notificationData);
+      
+      // Отправляем уведомление всем сокетам пользователя
+      const sockets = userSockets.get(userId);
+      if (sockets && sockets.length > 0) {
+        console.log(`[NOTIFICATIONS] Найдено ${sockets.length} активных соединений для пользователя ${userId}`);
+        sockets.forEach((socket, index) => {
+          console.log(`[NOTIFICATIONS] Отправка уведомления в сокет ${index + 1}`);
+          socket.emit('notification', notificationData);
+        });
+        console.log(`[NOTIFICATIONS] Уведомление отправлено ${sockets.length} соединениям пользователя ${userId}`);
+      } else {
+        console.log(`[NOTIFICATIONS] Пользователь ${userId} не имеет активных соединений`);
+      }
+    } catch (error) {
+      console.error('[NOTIFICATIONS] Ошибка при обработке уведомления:', error);
+      console.error('[NOTIFICATIONS] Исходное сообщение:', message);
     }
   }
 });

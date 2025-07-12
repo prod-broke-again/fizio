@@ -111,8 +111,8 @@ class UpdateAssetsInSpa extends Command
         // Извлекаем пути к ассетам из index.html
         $mainJsPattern = '/src="\/assets\/index-([^"]+)\.js"/';
         $cssPattern = '/href="\/assets\/index-([^"]+)\.css"/';
-        $legacyJsPattern = '/data-src="\/assets\/index-legacy-([^"]+)\.js"/';
-        $polyfillsPattern = '/src="\/assets\/polyfills-legacy-([^"]+)\.js"/';
+        $legacyJsPattern = '/data-src="(\/)?assets\/index-legacy-([^"]+)\.js"/';
+        $polyfillsPattern = '/src="(\/)?assets\/polyfills-legacy-([^"]+)\.js"/';
 
         if (!preg_match($mainJsPattern, $indexContent, $mainJsMatches)) {
             $this->error("Не удалось найти путь к основному JS файлу в index.html");
@@ -136,14 +136,14 @@ class UpdateAssetsInSpa extends Command
         // Формируем новые пути к ассетам
         $newMainJs = 'index-' . $mainJsMatches[1] . '.js';
         $newCss = 'index-' . $cssMatches[1] . '.css';
-        $newLegacyJs = 'index-legacy-' . $legacyJsMatches[1] . '.js';
-        $newPolyfills = isset($polyfillsMatches[1]) ? 'polyfills-legacy-' . $polyfillsMatches[1] . '.js' : null;
+        $newLegacyJs = 'index-legacy-' . $legacyJsMatches[2] . '.js';
+        $newPolyfills = isset($polyfillsMatches[2]) ? 'polyfills-legacy-' . $polyfillsMatches[2] . '.js' : null;
 
         // Находим текущие пути в spa.blade.php
         $currentMainJsPattern = '/src="\/assets\/index-([^"]+)\.js"/';
         $currentCssPattern = '/href="\/assets\/index-([^"]+)\.css"/';
-        $currentLegacyJsPattern = '/data-src="\/assets\/index-legacy-([^"]+)\.js"/';
-        $currentPolyfillsPattern = '/src="\/assets\/polyfills-legacy-([^"]+)\.js"/';
+        $currentLegacyJsPattern = '/data-src="(\/)?assets\/index-legacy-([^"]+)\.js"/';
+        $currentPolyfillsPattern = '/src="(\/)?assets\/polyfills-legacy-([^"]+)\.js"/';
 
         if (!preg_match($currentMainJsPattern, $spaContent, $currentMainJsMatches)) {
             $this->error("Не удалось найти путь к основному JS файлу в spa.blade.php");
@@ -167,8 +167,8 @@ class UpdateAssetsInSpa extends Command
         // Формируем текущие пути к ассетам
         $currentMainJs = 'index-' . $currentMainJsMatches[1] . '.js';
         $currentCss = 'index-' . $currentCssMatches[1] . '.css';
-        $currentLegacyJs = 'index-legacy-' . $currentLegacyJsMatches[1] . '.js';
-        $currentPolyfills = isset($currentPolyfillsMatches[1]) ? 'polyfills-legacy-' . $currentPolyfillsMatches[1] . '.js' : null;
+        $currentLegacyJs = 'index-legacy-' . $currentLegacyJsMatches[2] . '.js';
+        $currentPolyfills = isset($currentPolyfillsMatches[2]) ? 'polyfills-legacy-' . $currentPolyfillsMatches[2] . '.js' : null;
 
         // Собираем старые файлы для возможного удаления
         $oldFiles = [
@@ -247,19 +247,39 @@ class UpdateAssetsInSpa extends Command
             $updatedSpaContent
         );
 
-        $updatedSpaContent = preg_replace(
-            "/data-src=\"\/assets\/{$currentLegacyJs}\"/",
-            "data-src=\"/assets/{$newLegacyJs}\"",
-            $updatedSpaContent
-        );
-
-        // Обновляем полифилы если они есть
-        if ($currentPolyfills && $newPolyfills) {
+        // Определяем формат пути (с / или без)
+        if (preg_match('/data-src="\/assets/', $spaContent)) {
+            // С начальным слешем
             $updatedSpaContent = preg_replace(
-                "/src=\"\/assets\/{$currentPolyfills}\"/",
-                "src=\"/assets/{$newPolyfills}\"",
+                "/data-src=\"\/assets\/{$currentLegacyJs}\"/",
+                "data-src=\"/assets/{$newLegacyJs}\"",
                 $updatedSpaContent
             );
+            
+            // Обновляем полифилы если они есть
+            if ($currentPolyfills && $newPolyfills) {
+                $updatedSpaContent = preg_replace(
+                    "/src=\"\/assets\/{$currentPolyfills}\"/",
+                    "src=\"/assets/{$newPolyfills}\"",
+                    $updatedSpaContent
+                );
+            }
+        } else {
+            // Без начального слеша
+            $updatedSpaContent = preg_replace(
+                "/data-src=\"assets\/{$currentLegacyJs}\"/",
+                "data-src=\"assets/{$newLegacyJs}\"",
+                $updatedSpaContent
+            );
+            
+            // Обновляем полифилы если они есть
+            if ($currentPolyfills && $newPolyfills) {
+                $updatedSpaContent = preg_replace(
+                    "/src=\"assets\/{$currentPolyfills}\"/",
+                    "src=\"assets/{$newPolyfills}\"",
+                    $updatedSpaContent
+                );
+            }
         }
 
         // Сохраняем обновленный файл
@@ -303,11 +323,23 @@ class UpdateAssetsInSpa extends Command
         if (!empty($jsMatches[1])) {
             $foundFiles = array_merge($foundFiles, $jsMatches[1]);
         }
+        
+        // Ищем JavaScript файлы без начального слеша
+        preg_match_all('/src="assets\/([^"]+\.js)"/i', $content, $jsMatchesNoSlash);
+        if (!empty($jsMatchesNoSlash[1])) {
+            $foundFiles = array_merge($foundFiles, $jsMatchesNoSlash[1]);
+        }
 
         // Ищем все ссылки на CSS файлы
         preg_match_all('/href="\/assets\/([^"]+\.css)"/i', $content, $cssMatches);
         if (!empty($cssMatches[1])) {
             $foundFiles = array_merge($foundFiles, $cssMatches[1]);
+        }
+        
+        // Ищем CSS файлы без начального слеша
+        preg_match_all('/href="assets\/([^"]+\.css)"/i', $content, $cssMatchesNoSlash);
+        if (!empty($cssMatchesNoSlash[1])) {
+            $foundFiles = array_merge($foundFiles, $cssMatchesNoSlash[1]);
         }
 
         // Ищем все ссылки на изображения (могут быть в стилях)
@@ -315,11 +347,23 @@ class UpdateAssetsInSpa extends Command
         if (!empty($imgMatches[1])) {
             $foundFiles = array_merge($foundFiles, $imgMatches[1]);
         }
+        
+        // Ищем изображения без начального слеша
+        preg_match_all('/url\(["\']\??assets\/([^"\')]+)["\']?\)/i', $content, $imgMatchesNoSlash);
+        if (!empty($imgMatchesNoSlash[1])) {
+            $foundFiles = array_merge($foundFiles, $imgMatchesNoSlash[1]);
+        }
 
         // Ищем все ссылки на полифилы
         preg_match_all('/data-src="\/assets\/([^"]+)"/i', $content, $polyfillMatches);
         if (!empty($polyfillMatches[1])) {
             $foundFiles = array_merge($foundFiles, $polyfillMatches[1]);
+        }
+        
+        // Ищем полифилы без начального слеша
+        preg_match_all('/data-src="assets\/([^"]+)"/i', $content, $polyfillMatchesNoSlash);
+        if (!empty($polyfillMatchesNoSlash[1])) {
+            $foundFiles = array_merge($foundFiles, $polyfillMatchesNoSlash[1]);
         }
 
         return $foundFiles;

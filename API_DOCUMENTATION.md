@@ -40,6 +40,7 @@
   "email": "ivan@example.com",
   "password": "password123",
   "password_confirmation": "password123",
+  "gender": "male",
   "device_token": "optional-device-token"
 }
 ```
@@ -53,7 +54,7 @@
       "id": 1,
       "name": "Иван Иванов",
       "email": "ivan@example.com",
-      "gender": "not-specified",
+      "gender": "male",
       "created_at": "2023-08-15T12:00:00.000000Z",
       "updated_at": "2023-08-15T12:00:00.000000Z"
     },
@@ -89,7 +90,7 @@
       "id": 1,
       "name": "Иван Иванов",
       "email": "ivan@example.com",
-      "gender": "not-specified",
+      "gender": "male",
       "created_at": "2023-08-15T12:00:00.000000Z",
       "updated_at": "2023-08-15T12:00:00.000000Z"
     },
@@ -129,7 +130,7 @@
       "id": 1,
       "name": "Иван Иванов",
       "email": "telegram_id@example.com",
-      "gender": "not-specified",
+      "gender": "male",
       "telegram_id": "telegram-user-id",
       "telegram_username": "ivanov",
       "created_at": "2023-08-15T12:00:00.000000Z",
@@ -176,7 +177,7 @@ Authorization: Bearer токен_доступа
       "id": 1,
       "name": "Иван Иванов",
       "email": "ivan@example.com",
-      "gender": "not-specified",
+      "gender": "male",
       "telegram_id": "telegram-user-id",
       "telegram_username": "ivanov",
       "created_at": "2023-08-15T12:00:00.000000Z",
@@ -230,7 +231,7 @@ Authorization: Bearer токен_доступа
       "id": 1,
       "name": "Иван Иванов",
       "email": "ivan@example.com",
-      "gender": "not-specified",
+      "gender": "male",
       "fitness_goal": "weight-loss",
       "activity_level": "moderate",
       "created_at": "2023-08-15T12:00:00.000000Z",
@@ -271,7 +272,7 @@ avatar: [файл изображения]
       "id": 1,
       "name": "Иван Иванов",
       "email": "ivan@example.com",
-      "gender": "not-specified",
+      "gender": "male",
       "fitness_goal": "weight-loss",
       "activity_level": "moderate",
       "created_at": "2023-08-15T12:00:00.000000Z",
@@ -355,7 +356,7 @@ Authorization: Bearer токен_доступа
 {
   "success": true,
   "data": {
-    "gender": "not-specified"
+    "gender": "male"
   },
   "message": "Пол пользователя"
 }

@@ -146,7 +146,7 @@ class ProcessChatMessage implements ShouldQueue
         }
         
         // Добавляем текущее сообщение, если оно еще не в истории
-        if (empty($chatHistory) || $chatHistory[count($chatHistory) - 1]->message !== $message) {
+        if (empty($chatHistory) || $chatHistory->isEmpty() || $chatHistory->last()->message !== $message) {
             $messages[] = [
                 'role' => 'user',
                 'content' => $message

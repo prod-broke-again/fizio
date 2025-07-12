@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Workout extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     /**
      * Атрибуты, которые можно массово назначать
@@ -15,13 +17,18 @@ class Workout extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'id',
         'user_id',
-        'title',
-        'description',
-        'date',
+        'name',
+        'type',
+        'exercises',
         'duration',
-        'calories',
-        'image_url'
+        'difficulty',
+        'date',
+        'completed',
+        'calories_burned',
+        'category',
+        'image_url',
     ];
 
     /**
@@ -30,17 +37,40 @@ class Workout extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'date' => 'datetime',
+        'id' => 'string',
+        'exercises' => 'array',
         'duration' => 'integer',
-        'calories' => 'integer',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'date' => 'date:Y-m-d',
+        'completed' => 'boolean',
+        'calories_burned' => 'integer',
+        'image_url' => 'string',
     ];
 
     /**
-     * Получить пользователя, которому принадлежит тренировка
+     * The primary key for the model.
+     *
+     * @var string
      */
-    public function user()
+    protected $primaryKey = 'id';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The "type" of the primary key ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * Получить пользователя, который создал тренировку
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
