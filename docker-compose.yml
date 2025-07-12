@@ -21,11 +21,9 @@ services:
       DB_USERNAME: ${DB_USERNAME:-root}
       DB_PASSWORD: ${DB_PASSWORD:-password}
       REDIS_HOST: redis
-      MEMCACHED_HOST: memcached
     depends_on:
       - mariadb
       - redis
-      - memcached
     networks:
       - backend
 
@@ -78,15 +76,6 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
-    networks:
-      - backend
-
-  memcached:
-    image: memcached:alpine
-    container_name: fizio-memcached
-    restart: unless-stopped
-    ports:
-      - "11211:11211"
     networks:
       - backend
 

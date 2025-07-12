@@ -3,23 +3,17 @@ FROM php:8.2-fpm
 # Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git curl zip unzip \
-    build-essential \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    libmemcached-dev \
-    libsasl2-dev \
     zlib1g-dev
 
 # Install core PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
-# Install and enable memcached
-RUN pecl install memcached-3.2.0 && docker-php-ext-enable memcached
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
