@@ -17,9 +17,9 @@ services:
       DB_CONNECTION: mysql
       DB_HOST: mariadb
       DB_PORT: 3306
-      DB_DATABASE: fizio
-      DB_USERNAME: root
-      DB_PASSWORD: password
+      DB_DATABASE: ${DB_DATABASE:-fizio}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
       REDIS_HOST: redis
       MEMCACHED_HOST: memcached
     depends_on:
@@ -63,8 +63,8 @@ services:
     container_name: fizio-mariadb
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: password
-      MARIADB_DATABASE: fizio
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+      MARIADB_DATABASE: ${DB_DATABASE:-fizio}
     volumes:
       - dbdata:/var/lib/mysql
     ports:
