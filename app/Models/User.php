@@ -14,6 +14,14 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * Get the progress for the user.
+     */
+    public function progress()
+    {
+        return $this->hasMany(Progress::class);
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
