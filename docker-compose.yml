@@ -8,6 +8,8 @@ services:
         container_name: fizio-app
         restart: unless-stopped
         working_dir: /var/www
+        extra_hosts:
+            - "mail.satoru.lol:host-gateway"
         volumes:
             - ./:/var/www
         environment:
