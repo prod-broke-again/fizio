@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Meal extends Model
@@ -20,6 +21,7 @@ class Meal extends Model
         'user_id',
         'name',
         'type',
+        'time',
         'calories',
         'proteins',
         'fats',
@@ -27,7 +29,6 @@ class Meal extends Model
         'food_id',
         'date',
         'completed',
-        'time',
     ];
 
     /**
@@ -71,15 +72,59 @@ class Meal extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Связь с Food, если она нужна. По спецификации продукты (food) теперь часть Meal.
-    // Если Food - это отдельная сущность со своей таблицей, связь можно оставить.
-    // По текущей спецификации, все данные о еде (калории, белки, жиры, углеводы) хранятся прямо в Meal.
-    // public function foods(): HasMany
-    // {
-    //     return $this->hasMany(Food::class);
-    // }
+    /**
+     * Связь с элементами приёма пищи.
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(MealItem::class);
+    }
 
-    // Методы calculateTotalCalories и calculateMacros больше не нужны,
-    // так как КБЖУ хранятся прямо в модели Meal.
-    // Если они понадобятся для расчета по нескольким Meal, их можно вынести в сервис.
+    /**
+     * Получить общее количество калорий из всех элементов.
+     */
+    public function getTotalCaloriesAttribute(): float
+    {
+        return $this->items->sum('calories');
+    }
+
+    /**
+     * Получить общее количество белков из всех элементов.
+     */
+    public function getTotalProteinsAttribute(): float
+    {
+        return $this->items->sum('proteins');
+    }
+
+    /**
+     * Получить общее количество жиров из всех элементов.
+     */
+    public function getTotalFatsAttribute(): float
+    {
+        return $this->items->sum('fats');
+    }
+
+    /**
+     * Получить общее количество углеводов из всех элементов.
+     */
+    public function getTotalCarbsAttribute(): float
+    {
+        return $this->items->sum('carbs');
+    }
+
+    /**
+     * Проверить, есть ли элементы в приёме пищи.
+     */
+    public function hasItems(): bool
+    {
+        return $this->items()->exists();
+    }
+
+    /**
+     * Получить количество элементов в приёме пищи.
+     */
+    public function getItemsCountAttribute(): int
+    {
+        return $this->items()->count();
+    }
 } 

@@ -30,19 +30,43 @@ class TelegramAuthController extends Controller
             
             // Получаем данные из запроса
             $telegramData = null;
+            $initDataRaw = null;
             
             // Проверяем, пришли ли данные в параметре initData
             if ($request->has('initData')) {
-                $initDataString = $request->input('initData');
-                Log::debug('Получены данные в параметре initData', ['initData' => $initDataString]);
+                $initDataRaw = $request->input('initData');
+                Log::debug('Получены данные в параметре initData', ['initData' => $initDataRaw]);
                 
-                // Парсим строку initData
-                parse_str($initDataString, $telegramData);
+                // Парсим строку initData для получения данных пользователя
+                parse_str($initDataRaw, $telegramData);
             } 
             // Или данные пришли напрямую в теле запроса
             elseif ($request->has('hash') && $request->has('auth_date')) {
                 $telegramData = $request->all();
                 Log::debug('Получены данные напрямую в теле запроса', ['data' => $telegramData]);
+            }
+            // Или данные пришли в смешанном формате (и отдельные поля, и initData)
+            elseif ($request->has('init_data') || $request->has('initData')) {
+                // Приоритет отдаем initData (camelCase)
+                $initDataRaw = $request->input('initData') ?? $request->input('init_data');
+                Log::debug('Получены данные в смешанном формате', ['initData' => $initDataRaw]);
+                
+                // Парсим строку initData
+                parse_str($initDataRaw, $telegramData);
+                
+                // Дополняем данными из отдельных полей, если их нет в initData
+                if (!isset($telegramData['id']) && $request->has('id')) {
+                    $telegramData['id'] = $request->input('id');
+                }
+                if (!isset($telegramData['first_name']) && $request->has('first_name')) {
+                    $telegramData['first_name'] = $request->input('first_name');
+                }
+                if (!isset($telegramData['username']) && $request->has('username')) {
+                    $telegramData['username'] = $request->input('username');
+                }
+                if (!isset($telegramData['photo_url']) && $request->has('photo_url')) {
+                    $telegramData['photo_url'] = $request->input('photo_url');
+                }
             }
             
             // Проверяем наличие данных
@@ -51,8 +75,8 @@ class TelegramAuthController extends Controller
                 return response()->json(['message' => 'Отсутствуют данные аутентификации Telegram'], 400);
             }
             
-            // Валидируем данные от Telegram
-            if (!$this->telegramService->validateWebAppData($telegramData)) {
+            // Валидируем данные от Telegram (передаем сырую строку)
+            if (!$this->telegramService->validateWebAppData(['initData' => $initDataRaw])) {
                 Log::error('Ошибка аутентификации Telegram: невалидные данные', ['data' => $telegramData]);
                 return response()->json(['message' => 'Невалидные данные аутентификации Telegram'], 400);
             }
@@ -95,7 +119,7 @@ class TelegramAuthController extends Controller
                     'email' => 'telegram_' . $userData['id'] . '@example.com',
                     'password' => bcrypt(bin2hex(random_bytes(16))),
                     'telegram_username' => $userData['username'] ?? null,
-                    'gender' => 'not-specified',
+                    'gender' => null, // Поле gender определено как ENUM ['male', 'female'], поэтому используем null
                 ]
             );
             

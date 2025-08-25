@@ -20,7 +20,7 @@ class UpdateAssetsInSpa extends Command
      *
      * @var string
      */
-    protected $description = 'Обновляет пути к ассетам в spa.blade.php на основе данных из index.html и удаляет старые ассеты';
+    protected $description = 'Обновляет пути к ассетам в spa.blade.php на основе данных из index.html и удаляет старые ассеты. Флаг --force пропускает все подтверждения.';
 
     /**
      * Путь к файлу index.html
@@ -228,6 +228,7 @@ class UpdateAssetsInSpa extends Command
             $this->info("- Polyfills: " . ($currentPolyfills ?: 'отсутствует') . " -> " . ($newPolyfills ?: 'отсутствует'));
         }
 
+        // Флаг --force пропускает все подтверждения пользователя
         // Запрашиваем подтверждение, если не указан флаг --force
         if (!$this->option('force') && !$this->confirm('Вы уверены, что хотите обновить пути к ассетам?')) {
             $this->info('Операция отменена.');
@@ -301,7 +302,7 @@ class UpdateAssetsInSpa extends Command
         $this->info('Пути к ассетам успешно обновлены!');
 
         // Если указан флаг --clean, удаляем старые файлы
-        if ($this->option('clean') && $this->confirm('Вы хотите удалить старые неиспользуемые файлы ассетов?', true)) {
+        if ($this->option('clean')) {
             $this->cleanupOldAssets($newFiles, $oldFiles);
         }
 
@@ -509,6 +510,7 @@ class UpdateAssetsInSpa extends Command
             $this->info("- {$file}");
         }
 
+        // Флаг --force пропускает подтверждение удаления файлов
         if (!$this->option('force') && !$this->confirm('Вы уверены, что хотите удалить эти файлы?', true)) {
             $this->info('Удаление файлов отменено.');
             return;

@@ -21,3 +21,30 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Игнорируем все ассеты в public/assets
+/public/assets/*.js
+/public/assets/*.css
+/public/assets/*.map
+
+# Игнорируем временные файлы
+*.log
+*.tmp
+*.bak
+.env.bak
+
+# Игнорируем большие файлы данных
+*.csv
+*.sql
+
+# Игнорируем Python файлы (если они не нужны)
+*.py
+__pycache__/
+*.pyc
+
+# Игнорируем ws_server node_modules
+ws_server/node_modules/
+ws_server/package-lock.json
+
+# Игнорируем vendor папку в public
+public/vendor/

@@ -73,6 +73,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('meals/{mealId}/complete', [NutritionController::class, 'markMealAsCompleted']);
     });
     
+    // Управление приёмами пищи и их элементами
+    Route::prefix('meals')->middleware('auth:sanctum')->group(function () {
+        Route::post('/', [\App\Http\Controllers\API\MealController::class, 'store']);
+        Route::get('/{meal}', [\App\Http\Controllers\API\MealController::class, 'show']);
+        Route::put('/{meal}', [\App\Http\Controllers\API\MealController::class, 'update']);
+        Route::delete('/{meal}', [\App\Http\Controllers\API\MealController::class, 'destroy']);
+        
+        // Элементы приёма пищи
+        Route::post('/{meal}/items', [\App\Http\Controllers\API\MealItemController::class, 'store']);
+        Route::patch('/{meal}/items/{mealItem}', [\App\Http\Controllers\API\MealItemController::class, 'update']);
+        Route::delete('/{meal}/items/{mealItem}', [\App\Http\Controllers\API\MealItemController::class, 'destroy']);
+    });
+    
     // Apple Watch
     Route::post('/integrations/apple-watch/connect', [AppleWatchController::class, 'connect']);
     Route::post('/integrations/apple-watch/sync', [AppleWatchController::class, 'sync']);
@@ -94,6 +107,19 @@ Route::middleware('auth:sanctum')->group(function () {
     // Маршруты для готовых блюд
     Route::get('/ready-meals', [ReadyMealController::class, 'index']);
     Route::post('/ready-meals/add-to-plan', [ReadyMealController::class, 'addToPlan']);
+});
+
+// 1) Поиск локальных продуктов (алиас к существующему локальному поиску)
+Route::prefix('products')->middleware('auth:sanctum')->group(function () {
+    Route::get('search', [\App\Http\Controllers\API\ProductSearchController::class, 'searchLocal']);
+    Route::get('{id}',   [\App\Http\Controllers\API\ProductSearchController::class, 'showLocal']);
+});
+
+// 2) Превью и применение питания
+Route::prefix('meals')->middleware('auth:sanctum')->group(function () {
+    Route::post('preview', [\App\Http\Controllers\API\MealsApplyController::class, 'preview']);
+    Route::post('apply',   [\App\Http\Controllers\API\MealsApplyController::class, 'apply']);
+    Route::post('{meal}/items/bulk', [\App\Http\Controllers\API\MealItemController::class, 'bulkStore']);
 });
 
 // Маршруты для Telegram webhook
@@ -130,8 +156,37 @@ Route::prefix('openfoodfacts')->group(function () {
     Route::get('products/barcode/{barcode}', [OpenFoodFactsController::class, 'getProductByBarcode']);
 }); 
 
+Route::prefix('local-products')->group(function () {
+    Route::get('search', [App\Http\Controllers\LocalProductsController::class, 'searchProducts']);
+    Route::get('barcode/{barcode}', [App\Http\Controllers\LocalProductsController::class, 'getProductByBarcode']);
+    Route::get('cis', [App\Http\Controllers\LocalProductsController::class, 'getCISProducts']);
+    Route::get('russian', [App\Http\Controllers\LocalProductsController::class, 'getRussianProducts']);
+    Route::get('stats', [App\Http\Controllers\LocalProductsController::class, 'getStats']);
+}); 
+
 Route::prefix('spoonacular')->group(function () {
+    // Продукты
     Route::get('products/search', [SpoonacularController::class, 'searchProducts']);
     Route::get('products/upc/{upc}', [SpoonacularController::class, 'getProductByUPC']);
     Route::get('products/{id}/information', [SpoonacularController::class, 'getProductInformation']);
+    
+    // Рецепты
+    Route::get('recipes/search', [SpoonacularController::class, 'searchRecipes']);
+    Route::get('recipes/by-ingredients', [SpoonacularController::class, 'searchRecipesByIngredients']);
+    Route::get('recipes/{recipeId}/information', [SpoonacularController::class, 'getRecipeInformation']);
+    Route::get('recipes/random', [SpoonacularController::class, 'getRandomRecipes']);
+    
+    // Ингредиенты
+    Route::get('ingredients/search', [SpoonacularController::class, 'searchIngredients']);
+    Route::get('ingredients/{ingredientId}/information', [SpoonacularController::class, 'getIngredientInformation']);
+    Route::get('ingredients/autocomplete', [SpoonacularController::class, 'autocompleteIngredientSearch']);
+    
+    // Планирование питания
+    Route::get('meal-planner/generate', [SpoonacularController::class, 'generateMealPlan']);
+    Route::get('meal-planner/week', [SpoonacularController::class, 'getMealPlanWeek']);
+    
+    // Анализ питания
+    Route::post('recipes/analyze', [SpoonacularController::class, 'analyzeRecipe']);
+    Route::get('recipes/guess-nutrition', [SpoonacularController::class, 'guessNutritionByDishName']);
+    Route::post('recipes/classify-cuisine', [SpoonacularController::class, 'classifyCuisine']);
 }); 
