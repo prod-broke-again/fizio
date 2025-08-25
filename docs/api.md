@@ -1254,6 +1254,25 @@ GET /api/spoonacular/products/search
 GET /api/spoonacular/products/upc/{upc}
 ```
 
+### Локальные продукты (Open Food Facts)
+
+Подробное описание эндпоинтов локальных продуктов доступно в отдельном документе: [Локальные продукты API Документация](./api/local-products.md).
+
+Основные возможности включают:
+- Поиск продуктов в локальной базе данных
+- Поиск по штрих-коду
+- Фильтрация товаров СНГ и России
+- Получение статистики базы данных
+- Быстрый доступ без зависимости от внешних API
+
+```http
+GET /api/local-products/search
+GET /api/local-products/barcode/{barcode}
+GET /api/local-products/cis
+GET /api/local-products/russian
+GET /api/local-products/stats
+```
+
 ## Общие особенности
 
 ### Аутентификация
