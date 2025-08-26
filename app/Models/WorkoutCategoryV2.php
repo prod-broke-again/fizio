@@ -48,6 +48,14 @@ class WorkoutCategoryV2 extends BaseModel
     }
 
     /**
+     * Алиас для отношения к программам (для совместимости с Filament)
+     */
+    public function workout_programs(): HasMany
+    {
+        return $this->workoutPrograms();
+    }
+
+    /**
      * Scope для активных категорий
      */
     public function scopeActive(Builder $query): Builder
