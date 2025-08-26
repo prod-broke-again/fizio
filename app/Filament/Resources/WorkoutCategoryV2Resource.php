@@ -123,7 +123,7 @@ class WorkoutCategoryV2Resource extends Resource
                 
                 Tables\Columns\TextColumn::make('workout_programs_count')
                     ->label('Программ')
-                    ->counts('workoutPrograms')
+                    ->counts('workout_programs')
                     ->badge()
                     ->color('info'),
                 

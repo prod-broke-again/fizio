@@ -158,11 +158,19 @@ class UserSubscriptionV2Resource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('subscription_type')
                     ->label('Тип подписки')
-                    ->options(SubscriptionType::class),
+                    ->options([
+                        'monthly' => 'Месячная',
+                        'yearly' => 'Годовая',
+                        'lifetime' => 'Пожизненная',
+                    ]),
                 
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Статус')
-                    ->options(SubscriptionStatus::class),
+                    ->options([
+                        'active' => 'Активная',
+                        'expired' => 'Истекшая',
+                        'cancelled' => 'Отмененная',
+                    ]),
                 
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Только активные')

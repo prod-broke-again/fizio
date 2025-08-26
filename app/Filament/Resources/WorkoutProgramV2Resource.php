@@ -211,7 +211,11 @@ class WorkoutProgramV2Resource extends Resource
                 
                 Tables\Filters\SelectFilter::make('difficulty_level')
                     ->label('Сложность')
-                    ->options(WorkoutDifficulty::class),
+                    ->options([
+                        'beginner' => 'Начинающий',
+                        'intermediate' => 'Средний',
+                        'advanced' => 'Продвинутый',
+                    ]),
                 
                 Tables\Filters\TernaryFilter::make('is_free')
                     ->label('Только бесплатные'),
