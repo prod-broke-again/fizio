@@ -51,7 +51,11 @@ class WorkoutCategoryV2Resource extends Resource
                         
                         Forms\Components\Select::make('gender')
                             ->label('Пол')
-                            ->options(WorkoutGender::class)
+                            ->options([
+                                'male' => 'Мужской',
+                                'female' => 'Женский',
+                                'unisex' => 'Универсальный',
+                            ])
                             ->required()
                             ->searchable(),
                         
@@ -142,7 +146,11 @@ class WorkoutCategoryV2Resource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('gender')
                     ->label('Пол')
-                    ->options(WorkoutGender::class),
+                    ->options([
+                        'male' => 'Мужской',
+                        'female' => 'Женский',
+                        'unisex' => 'Универсальный',
+                    ]),
                 
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Только активные')

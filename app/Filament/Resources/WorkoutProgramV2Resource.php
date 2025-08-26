@@ -73,7 +73,11 @@ class WorkoutProgramV2Resource extends Resource
                     ->schema([
                         Forms\Components\Select::make('difficulty_level')
                             ->label('Уровень сложности')
-                            ->options(WorkoutDifficulty::class)
+                            ->options([
+                                'beginner' => 'Начинающий',
+                                'intermediate' => 'Средний',
+                                'advanced' => 'Продвинутый',
+                            ])
                             ->required()
                             ->searchable(),
                         
