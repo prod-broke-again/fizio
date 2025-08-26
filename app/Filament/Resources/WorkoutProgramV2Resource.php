@@ -186,7 +186,7 @@ class WorkoutProgramV2Resource extends Resource
                 
                 Tables\Columns\TextColumn::make('workout_exercises_count')
                     ->label('Упражнений')
-                    ->counts('workoutExercises')
+                    ->counts('workout_exercises')
                     ->badge()
                     ->color('info'),
                 
@@ -256,6 +256,6 @@ class WorkoutProgramV2Resource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withCount('workoutExercises');
+            ->withCount('workout_exercises');
     }
 }
