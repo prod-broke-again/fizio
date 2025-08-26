@@ -2,6 +2,7 @@
 
 return [
     App\Providers\AppServiceProvider::class,
+    App\Providers\AuthServiceProvider::class,
     App\Providers\Filament\AdminPanelProvider::class,
     Illuminate\Broadcasting\BroadcastServiceProvider::class,
     Illuminate\Redis\RedisServiceProvider::class,
