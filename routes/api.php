@@ -137,6 +137,45 @@ Route::prefix('chat')->middleware('auth:sanctum')->group(function () {
     Route::delete('/clear', [App\Http\Controllers\API\ChatController::class, 'clearChatHistory']);
 }); 
 
+// API V2 - Система тренировок с подпиской
+Route::prefix('v2')->group(function () {
+    // Открытые маршруты для категорий и программ
+    Route::prefix('workout-categories')->group(function () {
+        Route::get('/', [App\Http\Controllers\API\V2\WorkoutCategoryV2Controller::class, 'index']);
+        Route::get('/{slug}', [App\Http\Controllers\API\V2\WorkoutCategoryV2Controller::class, 'show']);
+    });
+    
+    Route::prefix('workout-programs')->group(function () {
+        Route::get('/', [App\Http\Controllers\API\V2\WorkoutProgramV2Controller::class, 'index']);
+        Route::get('/{slug}', [App\Http\Controllers\API\V2\WorkoutProgramV2Controller::class, 'show']);
+        Route::get('/category/{categorySlug}', [App\Http\Controllers\API\V2\WorkoutProgramV2Controller::class, 'getByCategory']);
+    });
+    
+    Route::prefix('workout-exercises')->group(function () {
+        Route::get('/{id}', [App\Http\Controllers\API\V2\WorkoutExerciseV2Controller::class, 'show']);
+        Route::get('/program/{programId}', [App\Http\Controllers\API\V2\WorkoutExerciseV2Controller::class, 'getByProgram']);
+    });
+    
+    // Защищенные маршруты (требуется авторизация)
+    Route::middleware('auth:sanctum')->group(function () {
+        // Прогресс пользователя
+        Route::prefix('user/workout-progress')->group(function () {
+            Route::get('/', [App\Http\Controllers\API\V2\UserWorkoutProgressV2Controller::class, 'index']);
+            Route::post('/', [App\Http\Controllers\API\V2\UserWorkoutProgressV2Controller::class, 'store']);
+            Route::put('/{id}', [App\Http\Controllers\API\V2\UserWorkoutProgressV2Controller::class, 'update']);
+            Route::get('/statistics', [App\Http\Controllers\API\V2\UserWorkoutProgressV2Controller::class, 'statistics']);
+        });
+        
+        // Подписки пользователя
+        Route::prefix('user/subscription')->group(function () {
+            Route::get('/', [App\Http\Controllers\API\V2\UserSubscriptionV2Controller::class, 'show']);
+            Route::post('/', [App\Http\Controllers\API\V2\UserSubscriptionV2Controller::class, 'store']);
+            Route::delete('/cancel', [App\Http\Controllers\API\V2\UserSubscriptionV2Controller::class, 'cancel']);
+            Route::get('/status', [App\Http\Controllers\API\V2\UserSubscriptionV2Controller::class, 'status']);
+        });
+    });
+});
+
 // Тестовый маршрут для проверки API GPTunnel
 Route::get('/test-gptunnel', [App\Http\Controllers\API\ChatController::class, 'testGptunnel']); 
 

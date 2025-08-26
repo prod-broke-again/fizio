@@ -60,9 +60,6 @@ return new class extends Migration
             $table->timestamps();
             
             // Индексы для быстрого поиска
-            $table->index(['product_name']);
-            $table->index(['brands']);
-            $table->index(['countries']);
             $table->index(['nutriscore_grade']);
             $table->index(['nova_group']);
             $table->index(['unique_scans_n']);
