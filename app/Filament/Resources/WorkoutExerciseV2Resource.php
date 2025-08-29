@@ -104,6 +104,12 @@ class WorkoutExerciseV2Resource extends Resource
                             ->minValue(0)
                             ->step(0.5)
                             ->suffix('кг'),
+
+                        Forms\Components\Placeholder::make('total_reps_info')
+                            ->label('Расчетные значения')
+                            ->content(fn ($record) => $record ? "Всего повторений: {$record->getTotalReps()}, Общее время: {$record->getTotalTimeMinutes()} мин." : 'Заполните подходы и повторения')
+                            ->columnSpanFull()
+                            ->visible(fn ($record) => $record && $record->sets && $record->reps),
                         
                         Forms\Components\TextInput::make('sort_order')
                             ->label('Порядок сортировки')
@@ -167,6 +173,25 @@ class WorkoutExerciseV2Resource extends Resource
                     ->sortable()
                     ->badge()
                     ->color('info'),
+
+                Tables\Columns\TextColumn::make('program.category.name')
+                    ->label('Категория')
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color('warning')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('program.difficulty_level')
+                    ->label('Сложность')
+                    ->badge()
+                    ->color(fn ($state) => match ($state?->value ?? $state) {
+                        'beginner' => 'success',
+                        'intermediate' => 'warning',
+                        'advanced' => 'danger',
+                        default => 'gray',
+                    })
+                    ->toggleable(),
                 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Название')
@@ -216,6 +241,35 @@ class WorkoutExerciseV2Resource extends Resource
                     ->sortable()
                     ->badge()
                     ->color('gray'),
+
+                Tables\Columns\TextColumn::make('total_reps')
+                    ->label('Всего повторений')
+                    ->state(fn ($record) => $record->getTotalReps())
+                    ->badge()
+                    ->color('primary')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('total_time_minutes')
+                    ->label('Общее время')
+                    ->state(fn ($record) => $record->getTotalTimeMinutes())
+                    ->suffix(' мин.')
+                    ->badge()
+                    ->color('secondary')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('equipment_list')
+                    ->label('Оборудование')
+                    ->state(fn ($record) => $record->getEquipmentList())
+                    ->limit(40)
+                    ->tooltip(fn ($record) => $record->getEquipmentList())
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('muscle_groups_list')
+                    ->label('Группы мышц')
+                    ->state(fn ($record) => $record->getMuscleGroupsList())
+                    ->limit(40)
+                    ->tooltip(fn ($record) => $record->getMuscleGroupsList())
+                    ->toggleable(isToggledHiddenByDefault: true),
                 
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Статус')
@@ -257,7 +311,37 @@ class WorkoutExerciseV2Resource extends Resource
                     ->options(WorkoutProgramV2::pluck('name', 'id'))
                     ->searchable()
                     ->preload(),
-                
+
+                Tables\Filters\SelectFilter::make('program_category_id')
+                    ->label('Категория')
+                    ->options(WorkoutCategoryV2::pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->query(function ($query, $data) {
+                        if ($data['value']) {
+                            return $query->whereHas('program', function ($query) use ($data) {
+                                $query->where('category_id', $data['value']);
+                            });
+                        }
+                        return $query;
+                    }),
+
+                Tables\Filters\SelectFilter::make('program_difficulty')
+                    ->label('Сложность программы')
+                    ->options([
+                        'beginner' => 'Начинающий',
+                        'intermediate' => 'Средний',
+                        'advanced' => 'Продвинутый',
+                    ])
+                    ->query(function ($query, $data) {
+                        if ($data['value']) {
+                            return $query->whereHas('program', function ($query) use ($data) {
+                                $query->where('difficulty_level', $data['value']);
+                            });
+                        }
+                        return $query;
+                    }),
+
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Только активные')
                     ->default(true),

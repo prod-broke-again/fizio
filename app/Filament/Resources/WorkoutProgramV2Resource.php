@@ -234,6 +234,20 @@ class WorkoutProgramV2Resource extends Resource
                     ->label('Превью')
                     ->circular()
                     ->toggleable(),
+
+                Tables\Columns\TextColumn::make('total_duration_minutes')
+                    ->label('Общее время')
+                    ->state(fn ($record) => $record->getTotalDurationMinutes())
+                    ->suffix(' мин.')
+                    ->badge()
+                    ->color('primary')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('total_duration_hours')
+                    ->label('Общее время (ч)')
+                    ->state(fn ($record) => $record->getTotalDurationHours())
+                    ->suffix(' ч')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Создано')
