@@ -53,7 +53,7 @@ class ChatMessageResource extends Resource
                 Tables\Columns\TextColumn::make('sender')
                     ->label('Отправитель')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn (?string $state): string => match ($state) {
                         'user' => 'primary',
                         'bot' => 'success',
                         default => 'gray',

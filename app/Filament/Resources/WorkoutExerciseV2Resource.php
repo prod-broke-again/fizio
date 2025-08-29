@@ -227,7 +227,7 @@ class WorkoutExerciseV2Resource extends Resource
                 
                 Tables\Columns\TextColumn::make('video_url')
                     ->label('Видео')
-                    ->url(fn (string $state): string => $state)
+                    ->url(fn (?string $state): ?string => $state)
                     ->openUrlInNewTab()
                     ->icon('heroicon-o-video-camera')
                     ->color('info')
