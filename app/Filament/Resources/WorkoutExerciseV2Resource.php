@@ -60,7 +60,7 @@ class WorkoutExerciseV2Resource extends Resource
                             ->rows(3)
                             ->columnSpanFull(),
                         
-                        Forms\Components\TextInput::make('instructions')
+                        Forms\Components\Textarea::make('instructions')
                             ->label('Инструкции')
                             ->rows(4)
                             ->columnSpanFull(),
