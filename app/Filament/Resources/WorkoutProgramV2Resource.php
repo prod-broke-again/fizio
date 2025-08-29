@@ -150,7 +150,7 @@ class WorkoutProgramV2Resource extends Resource
                 Tables\Columns\TextColumn::make('difficulty_level')
                     ->label('Сложность')
                     ->badge()
-                    ->color(fn ($state): string => match ((string) $state) {
+                    ->color(fn ($state): string => match ($state?->value ?? $state) {
                         'beginner' => 'success',
                         'intermediate' => 'warning',
                         'advanced' => 'danger',
