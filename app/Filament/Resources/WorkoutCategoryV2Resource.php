@@ -97,7 +97,7 @@ class WorkoutCategoryV2Resource extends Resource
                 Tables\Columns\TextColumn::make('gender')
                     ->label('Пол')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ((string) $state) {
                         'male' => 'success',
                         'female' => 'warning',
                         'unisex' => 'info',

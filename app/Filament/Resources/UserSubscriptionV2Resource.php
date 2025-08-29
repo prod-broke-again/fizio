@@ -104,7 +104,7 @@ class UserSubscriptionV2Resource extends Resource
                 Tables\Columns\TextColumn::make('subscription_type')
                     ->label('Тип подписки')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ((string) $state) {
                         'monthly' => 'info',
                         'yearly' => 'warning',
                         'lifetime' => 'success',
@@ -114,7 +114,7 @@ class UserSubscriptionV2Resource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Статус')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ((string) $state) {
                         'active' => 'success',
                         'expired' => 'danger',
                         'cancelled' => 'gray',
