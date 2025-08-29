@@ -2,8 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\SubscriptionStatus;
-use App\Enums\SubscriptionType;
+
 use App\Filament\Resources\UserSubscriptionV2Resource\Pages;
 use App\Filament\Resources\UserSubscriptionV2Resource\RelationManagers;
 use App\Models\User;
@@ -45,7 +44,11 @@ class UserSubscriptionV2Resource extends Resource
                         
                         Forms\Components\Select::make('subscription_type')
                             ->label('Тип подписки')
-                            ->options(SubscriptionType::class)
+                            ->options([
+                                'monthly' => 'Месячная',
+                                'yearly' => 'Годовая',
+                                'lifetime' => 'Пожизненная',
+                            ])
                             ->required()
                             ->searchable()
                             ->reactive()
@@ -57,7 +60,11 @@ class UserSubscriptionV2Resource extends Resource
                         
                         Forms\Components\Select::make('status')
                             ->label('Статус')
-                            ->options(SubscriptionStatus::class)
+                            ->options([
+                                'active' => 'Активная',
+                                'expired' => 'Истекшая',
+                                'cancelled' => 'Отмененная',
+                            ])
                             ->required()
                             ->searchable()
                             ->default('active'),

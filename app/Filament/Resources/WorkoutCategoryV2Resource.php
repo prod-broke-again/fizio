@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\WorkoutGender;
+
 use App\Filament\Resources\WorkoutCategoryV2Resource\Pages;
 use App\Filament\Resources\WorkoutCategoryV2Resource\RelationManagers;
 use App\Models\WorkoutCategoryV2;

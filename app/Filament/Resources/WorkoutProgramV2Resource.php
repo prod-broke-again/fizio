@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\WorkoutDifficulty;
+
 use App\Filament\Resources\WorkoutProgramV2Resource\Pages;
 use App\Filament\Resources\WorkoutProgramV2Resource\RelationManagers;
 use App\Models\WorkoutCategoryV2;
