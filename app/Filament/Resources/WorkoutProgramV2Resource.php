@@ -106,6 +106,33 @@ class WorkoutProgramV2Resource extends Resource
                     ])
                     ->columns(2),
                 
+                Forms\Components\Section::make('Видео')
+                    ->schema([
+                        Forms\Components\TextInput::make('video_url')
+                            ->label('URL видео')
+                            ->url()
+                            ->helperText('Ссылка на видео (YouTube, Vimeo и т.д.)')
+                            ->columnSpanFull(),
+                        
+                        Forms\Components\TextInput::make('thumbnail_url')
+                            ->label('URL превью')
+                            ->url()
+                            ->helperText('Ссылка на изображение превью видео')
+                            ->columnSpanFull(),
+                        
+                        Forms\Components\FileUpload::make('video_file')
+                            ->label('Видео файл')
+                            ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov'])
+                            ->maxSize(1024 * 1024 * 100) // 100 MB
+                            ->directory('workout-videos')
+                            ->disk('public')
+                            ->helperText('Загрузите видео файл (максимум 100 MB)')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1)
+                    ->collapsible()
+                    ->collapsed(),
+                
                 Forms\Components\Section::make('Настройки')
                     ->schema([
                         Forms\Components\Toggle::make('is_free')
@@ -193,6 +220,20 @@ class WorkoutProgramV2Resource extends Resource
                     ->counts('workout_exercises')
                     ->badge()
                     ->color('info'),
+                
+                Tables\Columns\TextColumn::make('video_url')
+                    ->label('Видео')
+                    ->url()
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-video-camera')
+                    ->color('info')
+                    ->toggleable()
+                    ->limit(30),
+                
+                Tables\Columns\ImageColumn::make('thumbnail_url')
+                    ->label('Превью')
+                    ->circular()
+                    ->toggleable(),
                 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Создано')

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->enum('difficulty_level', ['beginner', 'intermediate', 'advanced']);
             $table->integer('duration_weeks')->default(1);
             $table->integer('calories_per_workout')->nullable();
+
             $table->boolean('is_free')->default(false);
             $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->default(0);

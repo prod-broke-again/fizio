@@ -114,6 +114,24 @@ class WorkoutExerciseV2Resource extends Resource
                     ])
                     ->columns(2),
                 
+                Forms\Components\Section::make('Видео')
+                    ->schema([
+                        Forms\Components\TextInput::make('video_url')
+                            ->label('URL видео')
+                            ->url()
+                            ->helperText('Ссылка на видео упражнения (YouTube, Vimeo и т.д.)')
+                            ->columnSpanFull(),
+                        
+                        Forms\Components\TextInput::make('thumbnail_url')
+                            ->label('URL превью')
+                            ->url()
+                            ->helperText('Ссылка на изображение превью видео')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1)
+                    ->collapsible()
+                    ->collapsed(),
+                
                 Forms\Components\Section::make('Дополнительно')
                     ->schema([
                         Forms\Components\KeyValue::make('equipment_needed')
@@ -206,6 +224,20 @@ class WorkoutExerciseV2Resource extends Resource
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
                     ->falseColor('danger'),
+                
+                Tables\Columns\TextColumn::make('video_url')
+                    ->label('Видео')
+                    ->url()
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-video-camera')
+                    ->color('info')
+                    ->toggleable()
+                    ->limit(30),
+                
+                Tables\Columns\ImageColumn::make('thumbnail_url')
+                    ->label('Превью')
+                    ->circular()
+                    ->toggleable(),
                 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Создано')
