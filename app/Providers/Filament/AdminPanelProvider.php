@@ -17,6 +17,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Support\Facades\Route;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -37,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                \App\Filament\Widgets\ImpersonationWidget::class,
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
@@ -56,6 +58,15 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \FilipFonal\FilamentLogManager\FilamentLogManager::make(),
-            ]);
+            ])
+            ->routes(function () {
+                Route::get('/impersonate/{userId}', [\App\Http\Controllers\Admin\ImpersonateController::class, 'impersonate'])
+                    ->name('admin.impersonate')
+                    ->middleware(['auth']);
+
+                Route::get('/stop-impersonating', [\App\Http\Controllers\Admin\ImpersonateController::class, 'stopImpersonating'])
+                    ->name('admin.stop-impersonating')
+                    ->middleware(['auth']);
+            });
     }
 }
