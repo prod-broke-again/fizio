@@ -51,9 +51,10 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('password')
                             ->label('Пароль')
                             ->password()
-                            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                            ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : '')
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create')
+                            ->minLength(8)
                             ->maxLength(255)
                             ->helperText('Оставьте поле пустым, чтобы не изменять пароль.'),
                         Forms\Components\Select::make('roles')

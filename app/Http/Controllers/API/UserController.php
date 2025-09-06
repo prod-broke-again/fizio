@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -36,6 +37,8 @@ class UserController extends Controller
             'email' => 'sometimes|required|email|unique:users,email,' . $request->user()->id,
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender' => 'nullable|string|in:male,female',
+            'current_password' => 'required_with:password|string',
+            'password' => 'sometimes|required|string|min:8|confirmed',
         ]);
 
         if ($validator->fails()) {
@@ -47,7 +50,16 @@ class UserController extends Controller
         }
 
         $user = $request->user();
-        
+
+        // Проверка текущего пароля при изменении
+        if ($request->has('password') && !Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Текущий пароль указан неверно',
+                'errors' => ['current_password' => ['Текущий пароль указан неверно']]
+            ], 422);
+        }
+
         if ($request->has('name')) {
             $user->name = $request->name;
         }
@@ -58,6 +70,10 @@ class UserController extends Controller
         
         if ($request->has('gender')) {
             $user->gender = $request->gender;
+        }
+
+        if ($request->has('password')) {
+            $user->password = Hash::make($request->password);
         }
         
         // Обработка загрузки аватара
