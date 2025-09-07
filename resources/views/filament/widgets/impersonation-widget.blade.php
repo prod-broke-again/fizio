@@ -14,7 +14,7 @@
             </div>
             <div class="flex space-x-2">
                 <a
-                    href="{{ route('admin.stop-impersonating') }}"
+                    href="{{ route('filament.admin.admin.stop-impersonating') }}"
                     class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                 >
                     <x-heroicon-o-arrow-left-on-rectangle class="h-4 w-4 mr-2" />
