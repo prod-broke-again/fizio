@@ -136,7 +136,7 @@ class WorkoutProgramV2 extends BaseModel
      */
     public function getTotalDurationSeconds(): int
     {
-        return $this->exercises()->sum('duration_seconds');
+        return (int) $this->exercises()->sum('duration_seconds');
     }
 
     /**
