@@ -26,6 +26,21 @@ class WorkoutProgramV2Resource extends JsonResource
             'is_free' => $this->is_free,
             'is_active' => $this->is_active,
             'sort_order' => $this->sort_order,
+            
+            // Видео контент программы
+            'video' => [
+                'url' => $this->video_url,
+                'file' => $this->video_file ? asset('storage/' . $this->video_file) : null,
+                'has_video' => $this->hasVideo() || !empty($this->video_file),
+            ],
+            
+            // Превью изображения программы
+            'thumbnail' => [
+                'url' => $this->thumbnail_url,
+                'file' => $this->thumbnail_file ? asset('storage/' . $this->thumbnail_file) : null,
+                'has_thumbnail' => $this->hasThumbnail() || !empty($this->thumbnail_file),
+            ],
+            
             'category' => new WorkoutCategoryV2Resource($this->whenLoaded('category')),
             'workout_exercises' => WorkoutExerciseV2Resource::collection($this->whenLoaded('workoutExercises')),
             'created_at' => $this->created_at?->toISOString(),

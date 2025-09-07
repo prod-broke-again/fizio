@@ -148,6 +148,46 @@ class WorkoutProgramV2 extends BaseModel
     }
 
     /**
+     * Проверить, есть ли видео
+     */
+    public function hasVideo(): bool
+    {
+        return !empty($this->video_url) || !empty($this->video_file);
+    }
+
+    /**
+     * Проверить, есть ли превью
+     */
+    public function hasThumbnail(): bool
+    {
+        return !empty($this->thumbnail_url) || !empty($this->thumbnail_file);
+    }
+
+    /**
+     * Получить URL видео (приоритет файлу)
+     */
+    public function getVideoUrl(): ?string
+    {
+        if (!empty($this->video_file)) {
+            return asset('storage/' . $this->video_file);
+        }
+        
+        return $this->video_url;
+    }
+
+    /**
+     * Получить URL превью (приоритет файлу)
+     */
+    public function getThumbnailUrl(): ?string
+    {
+        if (!empty($this->thumbnail_file)) {
+            return asset('storage/' . $this->thumbnail_file);
+        }
+        
+        return $this->thumbnail_url;
+    }
+
+    /**
      * Получить общую длительность программы в часах
      */
     public function getTotalDurationHours(): float

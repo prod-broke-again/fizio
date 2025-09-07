@@ -158,6 +158,16 @@ GET /api/v2/workout-programs?difficulty_level=beginner&is_free=true&gender=male
     "is_free": true,
     "is_active": true,
     "sort_order": 1,
+    "video": {
+      "url": "https://youtube.com/watch?v=example",
+      "file": "http://domain.com/storage/workout-videos/program-video.mp4",
+      "has_video": true
+    },
+    "thumbnail": {
+      "url": "https://example.com/program-thumb.jpg",
+      "file": "http://domain.com/storage/workout-thumbnails/program-thumb.jpg",
+      "has_thumbnail": true
+    },
     "category": {
       "id": "uuid",
       "name": "Силовые тренировки",
@@ -200,6 +210,16 @@ GET /api/v2/workout-programs/beginner-program
     "is_free": true,
     "is_active": true,
     "sort_order": 1,
+    "video": {
+      "url": "https://youtube.com/watch?v=example",
+      "file": "http://domain.com/storage/workout-videos/program-video.mp4",
+      "has_video": true
+    },
+    "thumbnail": {
+      "url": "https://example.com/program-thumb.jpg",
+      "file": "http://domain.com/storage/workout-thumbnails/program-thumb.jpg",
+      "has_thumbnail": true
+    },
     "category": {...},
     "workout_exercises": [...],
     "created_at": "2024-01-01T00:00:00.000000Z",
@@ -235,22 +255,37 @@ GET /api/v2/workout-exercises/uuid-here
     "name": "Приседания со штангой",
     "description": "Техника выполнения приседаний",
     "instructions": "Встаньте ровно, возьмите штангу на плечи...",
-    "video_url": "https://youtube.com/watch?v=example",
-    "thumbnail_url": "https://example.com/thumbnail.jpg",
+    "video": {
+      "url": "https://youtube.com/watch?v=example",
+      "file": "http://domain.com/storage/workout-videos/squat-video.mp4",
+      "has_video": true
+    },
+    "thumbnail": {
+      "url": "https://example.com/thumbnail.jpg",
+      "file": "http://domain.com/storage/workout-thumbnails/squat-thumb.jpg",
+      "has_thumbnail": true
+    },
     "duration_seconds": 45,
+    "duration_minutes": 1,
     "sets": 4,
     "reps": 8,
+    "total_reps": 32,
     "rest_seconds": 120,
     "weight_kg": 60.0,
+    "total_time_seconds": 300,
+    "total_time_minutes": 5,
+    "total_time_hours": 0.08,
     "equipment_needed": [
       "Штанга",
       "Гриф"
     ],
+    "equipment_list": "Штанга, Гриф",
     "muscle_groups": [
       "Квадрицепсы",
       "Ягодичные мышцы",
       "Бицепс бедра"
     ],
+    "muscle_groups_list": "Квадрицепсы, Ягодичные мышцы, Бицепс бедра",
     "sort_order": 1,
     "program": {
       "id": "uuid",
@@ -264,6 +299,16 @@ GET /api/v2/workout-exercises/uuid-here
       "is_free": true,
       "is_active": true,
       "sort_order": 1,
+      "video": {
+        "url": "https://youtube.com/watch?v=program-example",
+        "file": "http://domain.com/storage/workout-videos/program-video.mp4",
+        "has_video": true
+      },
+      "thumbnail": {
+        "url": "https://example.com/program-thumb.jpg",
+        "file": "http://domain.com/storage/workout-thumbnails/program-thumb.jpg",
+        "has_thumbnail": true
+      },
       "category": {
         "id": "uuid",
         "name": "Силовые тренировки",
@@ -278,6 +323,9 @@ GET /api/v2/workout-exercises/uuid-here
       "created_at": "2024-01-01T00:00:00.000000Z",
       "updated_at": "2024-01-01T00:00:00.000000Z"
     },
+    "program_name": "Программа для начинающих",
+    "category_name": "Силовые тренировки",
+    "gender": "male",
     "created_at": "2024-01-01T00:00:00.000000Z",
     "updated_at": "2024-01-01T00:00:00.000000Z"
   }
@@ -300,17 +348,35 @@ GET /api/v2/workout-exercises/program/uuid-here
     "name": "Приседания со штангой",
     "description": "Техника выполнения приседаний",
     "instructions": "Встаньте ровно, возьмите штангу на плечи...",
-    "video_url": "https://youtube.com/watch?v=example",
-    "thumbnail_url": "https://example.com/thumbnail.jpg",
+    "video": {
+      "url": "https://youtube.com/watch?v=example",
+      "file": "http://domain.com/storage/workout-videos/squat-video.mp4",
+      "has_video": true
+    },
+    "thumbnail": {
+      "url": "https://example.com/thumbnail.jpg",
+      "file": "http://domain.com/storage/workout-thumbnails/squat-thumb.jpg",
+      "has_thumbnail": true
+    },
     "duration_seconds": 45,
+    "duration_minutes": 1,
     "sets": 4,
     "reps": 8,
+    "total_reps": 32,
     "rest_seconds": 120,
     "weight_kg": 60.0,
-    "equipment_needed": [...],
-    "muscle_groups": [...],
+    "total_time_seconds": 300,
+    "total_time_minutes": 5,
+    "total_time_hours": 0.08,
+    "equipment_needed": ["Штанга", "Гриф"],
+    "equipment_list": "Штанга, Гриф",
+    "muscle_groups": ["Квадрицепсы", "Ягодичные мышцы", "Бицепс бедра"],
+    "muscle_groups_list": "Квадрицепсы, Ягодичные мышцы, Бицепс бедра",
     "sort_order": 1,
     "program": {...},
+    "program_name": "Программа для начинающих",
+    "category_name": "Силовые тренировки",
+    "gender": "male",
     "created_at": "2024-01-01T00:00:00.000000Z",
     "updated_at": "2024-01-01T00:00:00.000000Z"
   }
@@ -410,6 +476,37 @@ protected $fillable = [
 ];
 ```
 
+### Поля видео в API ответах
+
+Все ресурсы с видео контентом возвращают структурированные поля:
+
+#### Поле `video`
+```json
+{
+  "video": {
+    "url": "https://youtube.com/watch?v=example",           // Внешний URL видео
+    "file": "http://domain.com/storage/workout-videos/video.mp4", // Локальный файл видео
+    "has_video": true                                       // Флаг наличия видео
+  }
+}
+```
+
+#### Поле `thumbnail`
+```json
+{
+  "thumbnail": {
+    "url": "https://example.com/thumb.jpg",                 // Внешний URL превью
+    "file": "http://domain.com/storage/workout-thumbnails/thumb.jpg", // Локальный файл превью
+    "has_thumbnail": true                                   // Флаг наличия превью
+  }
+}
+```
+
+**Приоритет отображения:**
+1. Если есть `file` - используется локальный файл
+2. Если нет `file`, но есть `url` - используется внешний URL
+3. Если оба пустые - поля `has_video`/`has_thumbnail` = `false`
+
 ### WorkoutProgramV2
 ```php
 protected $fillable = [
@@ -424,6 +521,7 @@ protected $fillable = [
     'video_url',            // URL видео программы
     'thumbnail_url',        // URL превью
     'video_file',           // Локальный файл видео
+    'thumbnail_file',       // Локальный файл превью
     'is_free',              // Бесплатная программа
     'is_active',            // Активная программа
     'sort_order'            // Порядок сортировки
@@ -440,6 +538,8 @@ protected $fillable = [
     'instructions',         // Инструкции по выполнению
     'video_url',           // URL видео упражнения
     'thumbnail_url',       // URL превью
+    'video_file',          // Локальный файл видео
+    'thumbnail_file',      // Локальный файл превью
     'duration_seconds',    // Длительность упражнения
     'sets',                // Количество подходов
     'reps',                // Количество повторений
