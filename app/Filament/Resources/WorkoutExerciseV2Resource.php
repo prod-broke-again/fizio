@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\WorkoutExerciseV2Resource\Pages;
 use App\Filament\Resources\WorkoutExerciseV2Resource\RelationManagers;
+use App\Models\WorkoutCategoryV2;
 use App\Models\WorkoutExerciseV2;
 use App\Models\WorkoutProgramV2;
 use Filament\Forms;
