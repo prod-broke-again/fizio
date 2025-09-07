@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Session;
 
 class ImpersonationWidget extends Widget
 {
+    protected static string $view = 'filament.widgets.impersonation-widget';
+    
     protected static ?int $sort = -1;
 
     protected static bool $isLazy = false;
