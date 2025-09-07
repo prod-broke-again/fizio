@@ -28,6 +28,8 @@ class WorkoutExerciseV2 extends BaseModel
         'instructions',
         'video_url',
         'thumbnail_url',
+        'video_file',
+        'thumbnail_file',
         'duration_seconds',
         'sets',
         'reps',
@@ -123,7 +125,7 @@ class WorkoutExerciseV2 extends BaseModel
      */
     public function hasVideo(): bool
     {
-        return !empty($this->video_url);
+        return !empty($this->video_url) || !empty($this->video_file);
     }
 
     /**
@@ -131,7 +133,59 @@ class WorkoutExerciseV2 extends BaseModel
      */
     public function hasThumbnail(): bool
     {
-        return !empty($this->thumbnail_url);
+        return !empty($this->thumbnail_url) || !empty($this->thumbnail_file);
+    }
+
+    /**
+     * Получить URL видео (приоритет файлу)
+     */
+    public function getVideoUrl(): ?string
+    {
+        if (!empty($this->video_file)) {
+            return asset('storage/' . $this->video_file);
+        }
+        
+        return $this->video_url;
+    }
+
+    /**
+     * Получить URL превью (приоритет файлу)
+     */
+    public function getThumbnailUrl(): ?string
+    {
+        if (!empty($this->thumbnail_file)) {
+            return asset('storage/' . $this->thumbnail_file);
+        }
+        
+        return $this->thumbnail_url;
+    }
+
+    /**
+     * Получить тип видео (файл или URL)
+     */
+    public function getVideoType(): string
+    {
+        if (!empty($this->video_file)) {
+            return 'file';
+        } elseif (!empty($this->video_url)) {
+            return 'url';
+        }
+        
+        return 'none';
+    }
+
+    /**
+     * Получить тип превью (файл или URL)
+     */
+    public function getThumbnailType(): string
+    {
+        if (!empty($this->thumbnail_file)) {
+            return 'file';
+        } elseif (!empty($this->thumbnail_url)) {
+            return 'url';
+        }
+        
+        return 'none';
     }
 
     /**

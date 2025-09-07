@@ -122,16 +122,36 @@ class WorkoutExerciseV2Resource extends Resource
                 
                 Forms\Components\Section::make('Видео')
                     ->schema([
+                        Forms\Components\FileUpload::make('video_file')
+                            ->label('Видео файл')
+                            ->acceptedFileTypes(['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/webm'])
+                            ->maxSize(102400) // 100MB
+                            ->directory('workout-videos')
+                            ->visibility('public')
+                            ->helperText('Загрузите видео файл (MP4, AVI, MOV, WMV, WebM, максимум 100MB)')
+                            ->columnSpanFull(),
+                        
+                        Forms\Components\FileUpload::make('thumbnail_file')
+                            ->label('Превью изображение')
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120) // 5MB
+                            ->directory('workout-thumbnails')
+                            ->visibility('public')
+                            ->image()
+                            ->imageEditor()
+                            ->helperText('Загрузите изображение превью (JPEG, PNG, WebP, максимум 5MB)')
+                            ->columnSpanFull(),
+                        
                         Forms\Components\TextInput::make('video_url')
-                            ->label('URL видео')
+                            ->label('URL видео (альтернатива)')
                             ->url()
-                            ->helperText('Ссылка на видео упражнения (YouTube, Vimeo и т.д.)')
+                            ->helperText('Или введите ссылку на видео (YouTube, Vimeo и т.д.)')
                             ->columnSpanFull(),
                         
                         Forms\Components\TextInput::make('thumbnail_url')
-                            ->label('URL превью')
+                            ->label('URL превью (альтернатива)')
                             ->url()
-                            ->helperText('Ссылка на изображение превью видео')
+                            ->helperText('Или введите ссылку на изображение превью')
                             ->columnSpanFull(),
                     ])
                     ->columns(1)
@@ -279,19 +299,40 @@ class WorkoutExerciseV2Resource extends Resource
                     ->trueColor('success')
                     ->falseColor('danger'),
                 
-                Tables\Columns\TextColumn::make('video_url')
+                Tables\Columns\TextColumn::make('video_status')
                     ->label('Видео')
-                    ->url(fn (?string $state): ?string => $state)
-                    ->openUrlInNewTab()
-                    ->icon('heroicon-o-video-camera')
-                    ->color('info')
-                    ->toggleable()
-                    ->limit(30),
+                    ->state(function ($record) {
+                        if ($record->video_file) {
+                            return 'Файл загружен';
+                        } elseif ($record->video_url) {
+                            return 'URL ссылка';
+                        }
+                        return 'Нет видео';
+                    })
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        'Файл загружен' => 'success',
+                        'URL ссылка' => 'info',
+                        'Нет видео' => 'gray',
+                        default => 'gray',
+                    })
+                    ->icon(fn ($state) => match ($state) {
+                        'Файл загружен' => 'heroicon-o-video-camera',
+                        'URL ссылка' => 'heroicon-o-link',
+                        'Нет видео' => 'heroicon-o-x-mark',
+                        default => 'heroicon-o-x-mark',
+                    })
+                    ->toggleable(),
+                
+                Tables\Columns\ImageColumn::make('thumbnail_file')
+                    ->label('Превью файл')
+                    ->circular()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 
                 Tables\Columns\ImageColumn::make('thumbnail_url')
-                    ->label('Превью')
+                    ->label('Превью URL')
                     ->circular()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Создано')
