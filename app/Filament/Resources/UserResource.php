@@ -102,7 +102,7 @@ class UserResource extends Resource
                     ->label('Войти под пользователем')
                     ->icon('heroicon-o-user')
                     ->color('warning')
-                    ->url(fn ($record) => route('admin.impersonate', $record->id))
+                    ->url(fn ($record) => route('filament.admin.admin.impersonate', $record->id))
                     ->openUrlInNewTab()
                     ->visible(fn ($record) => $record->id !== auth()->id()), // Не показывать для текущего пользователя
                 Tables\Actions\EditAction::make(),
